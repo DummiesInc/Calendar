@@ -9,8 +9,8 @@ public class Event: BaseModel
     [PrimaryKey("id", false)]
     public int Id { get; set; }
     
-    [Column("event_type")]
-    public int EventType { get; set; }
+    [Column("event_type_id")]
+    public int EventTypeId { get; set; }
     
     [Column("description")]
     public string Description { get; set; }

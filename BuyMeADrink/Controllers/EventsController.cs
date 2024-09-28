@@ -7,12 +7,12 @@ namespace BuyMeADrink.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class EventController: ControllerBase
+public class EventsController: ControllerBase
 {
-    private readonly ILogger<EventController> _logger;
+    private readonly ILogger<EventsController> _logger;
     private readonly IEventService _eventService;
     
-    public EventController(ILogger<EventController> logger, 
+    public EventsController(ILogger<EventsController> logger, 
         IEventService eventService)
     {
         _logger = logger;
@@ -26,8 +26,8 @@ public class EventController: ControllerBase
         return Ok(result);
     }
 
-    [HttpGet("id")]
-    public async Task<ActionResult<GetEventDto>> GetEvent([FromQuery] int id)
+    [HttpGet("{id}")]
+    public async Task<ActionResult<GetEventDto>> GetEvent(int id)
     {
         var result = await _eventService.GetEvent(id);
         return Ok(result);
@@ -40,8 +40,8 @@ public class EventController: ControllerBase
         return Ok(result);
     }
 
-    [HttpDelete("id")]
-    public async Task<ActionResult> DeleteEvent([FromQuery] int id)
+    [HttpDelete("{id}")]
+    public async Task<ActionResult> DeleteEvent(int id)
     {
         await _eventService.DeleteEvent(id);
         return Ok();

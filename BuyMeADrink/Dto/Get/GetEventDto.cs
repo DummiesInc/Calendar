@@ -4,7 +4,7 @@ public class GetEventDto
 {
     public int Id { get; set; }
     
-    public int EventType { get; set; }
+    public int EventTypeId { get; set; }
     
     public string? Description { get; set; }
     

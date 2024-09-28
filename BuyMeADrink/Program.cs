@@ -18,7 +18,7 @@ builder.Services.AddSingleton(client =>
     new Client(supabaseUrl!, supabaseKey));
 
 // Dependency Injection
-builder.Services.AddScoped<IEventService, EventService>();
+builder.Services.AddScoped<IEventService, EventsService>();
 
 var app = builder.Build();
 

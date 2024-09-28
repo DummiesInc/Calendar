@@ -14,11 +14,11 @@ public interface IEventService
     Task DeleteEvent(int id);
 }
 
-public class EventService: IEventService
+public class EventsService: IEventService
 {
     private readonly Client _supabaseClient;
     
-    public EventService(Client supabaseClient)
+    public EventsService(Client supabaseClient)
     {
         _supabaseClient = supabaseClient;
     }
@@ -31,7 +31,8 @@ public class EventService: IEventService
             Id = x.Id,
             StartTime = x.StartTime,
             EndTime = x.EndTime,
-            Description = x.Description
+            Description = x.Description,
+            EventTypeId = x.EventTypeId,
         }).ToList();
         return result;
     }
@@ -50,19 +51,27 @@ public class EventService: IEventService
             Id = data.Id,
             StartTime = data.StartTime,
             EndTime = data.EndTime,
-            Description =  data.Description
+            Description =  data.Description,
+            EventTypeId = data.EventTypeId,
         };
     }
 
     public async Task<GetEventDto> AddEvent(AddEventDto addEventDto)
     {
+        var eventType = await _supabaseClient.From<EventType>().Where(x => x.Id == addEventDto.EventTypeId).Get();
         // EventType -> event type use to label an event. Example: movie, date, interview, etc...
+
+        if (eventType.Model == null)
+        {
+            throw new InvalidOperationException("Invalid event type");
+        }
+        
         var data = new Event
         {
             Description = addEventDto.Description ?? Constant.DefaultString,
             StartTime = addEventDto.StartTime,
             EndTime = addEventDto.EndTime,
-            EventType = 1, // Update this later with either enum or a new database table 
+            EventTypeId = eventType.Model.Id, 
         };
 
         var result = await _supabaseClient.From<Event>().Insert(data);
@@ -77,7 +86,8 @@ public class EventService: IEventService
             Id = result.Model.Id,
             StartTime = result.Model.StartTime,
             EndTime =  result.Model.EndTime,
-            Description = result.Model.Description
+            Description = result.Model.Description,
+            EventTypeId = result.Model.EventTypeId,
         };
     }
 
