@@ -43,14 +43,6 @@ public class EventsService: IEventService
         {
             throw new InvalidOperationException("The event you are looking for does not exist");
         }
-        // return new GetEventDto
-        // {
-        //     Id = data.Id,
-        //     StartTime = data.StartTime,
-        //     EndTime = data.EndTime,
-        //     Description =  data.Description,
-        //     EventTypeId = data.EventTypeId,
-        // };
         return _mapper.Map<GetEventDto>(data);
     }
 
