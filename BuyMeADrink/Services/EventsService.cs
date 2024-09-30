@@ -1,3 +1,4 @@
+using AutoMapper;
 using BuyMeADrink.Dto.Add;
 using BuyMeADrink.Dto.Get;
 using BuyMeADrink.Model;
@@ -17,24 +18,20 @@ public interface IEventService
 public class EventsService: IEventService
 {
     private readonly Client _supabaseClient;
-    
-    public EventsService(Client supabaseClient)
+    private readonly IMapper _mapper;
+    public EventsService(
+        IMapper mapper,
+        Client supabaseClient)
     {
+        _mapper = mapper;
         _supabaseClient = supabaseClient;
     }
 
     public async Task<List<GetEventDto>> GetEvents()
     {
         var response = await _supabaseClient.From<Event>().Get();
-        var result = response.Models.Select(x => new GetEventDto
-        {
-            Id = x.Id,
-            StartTime = x.StartTime,
-            EndTime = x.EndTime,
-            Description = x.Description,
-            EventTypeId = x.EventTypeId,
-        }).ToList();
-        return result;
+        var mappedEvents = _mapper.Map<List<GetEventDto>>(response.Models);
+        return mappedEvents;
     }
     
     public async Task<GetEventDto> GetEvent(int id)
@@ -46,18 +43,20 @@ public class EventsService: IEventService
         {
             throw new InvalidOperationException("The event you are looking for does not exist");
         }
-        return new GetEventDto
-        {
-            Id = data.Id,
-            StartTime = data.StartTime,
-            EndTime = data.EndTime,
-            Description =  data.Description,
-            EventTypeId = data.EventTypeId,
-        };
+        // return new GetEventDto
+        // {
+        //     Id = data.Id,
+        //     StartTime = data.StartTime,
+        //     EndTime = data.EndTime,
+        //     Description =  data.Description,
+        //     EventTypeId = data.EventTypeId,
+        // };
+        return _mapper.Map<GetEventDto>(data);
     }
 
     public async Task<GetEventDto> AddEvent(AddEventDto addEventDto)
     {
+        
         var eventType = await _supabaseClient.From<EventType>().Where(x => x.Id == addEventDto.EventTypeId).Get();
         // EventType -> event type use to label an event. Example: movie, date, interview, etc...
 
@@ -80,15 +79,8 @@ public class EventsService: IEventService
         {
             throw new InvalidOperationException("Something bad happened...your event was not added");
         }
-        
-        return new GetEventDto
-        {
-            Id = result.Model.Id,
-            StartTime = result.Model.StartTime,
-            EndTime =  result.Model.EndTime,
-            Description = result.Model.Description,
-            EventTypeId = result.Model.EventTypeId,
-        };
+
+        return _mapper.Map<GetEventDto>(result.Model);
     }
 
     public async Task DeleteEvent(int id)

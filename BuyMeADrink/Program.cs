@@ -1,4 +1,5 @@
 using BuyMeADrink.Services;
+using BuyMeADrink.Utils;
 using Supabase;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,7 +19,8 @@ builder.Services.AddSingleton(client =>
     new Client(supabaseUrl!, supabaseKey));
 
 // Dependency Injection
-builder.Services.AddScoped<IEventService, EventsService>();
+builder.Services.ConfigureCommonServices();
+
 
 var app = builder.Build();
 
