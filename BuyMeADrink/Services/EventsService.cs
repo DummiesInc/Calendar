@@ -1,6 +1,7 @@
 using AutoMapper;
 using BuyMeADrink.Dto.Add;
 using BuyMeADrink.Dto.Get;
+using BuyMeADrink.Dto.Request;
 using BuyMeADrink.Model;
 using BuyMeADrink.Utils;
 using Supabase;
@@ -12,6 +13,7 @@ public interface IEventService
     Task<List<GetEventDto>> GetEvents();
     Task<GetEventDto> GetEvent(int id);
     Task<List<GetEventDto>> AddEvent(AddEventDto addEventDto);
+    Task<List<GetEventDto>> UpdateEvent(int id, UpdateEventDto updateEventDto);
     Task DeleteEvent(int id);
 }
 
@@ -87,5 +89,26 @@ public class EventsService: IEventService
         }
         
         await _supabaseClient.From<Event>().Where(x => x.Id == id).Delete();
+    }
+    
+    public async Task<List<GetEventDto>> UpdateEvent(int id, UpdateEventDto updateEventDto)
+    {
+        var response = await _supabaseClient.From<Event>().Where(x => x.Id == id).Get();
+        
+        if (response.Model == null)
+        {
+            throw new InvalidOperationException("The item you are trying to update does not exist");
+        }
+
+        await _supabaseClient.From<Event>().Where(x => x.Id == id)
+            .Set(x => x.StartTime, updateEventDto.StartTime ?? response.Model.StartTime)
+            .Set(x => x.EndTime, updateEventDto.EndTime ?? response.Model.EndTime)
+            .Set(x => x.Description, updateEventDto.Description ?? response.Model.Description)
+            .Set(x => x.EventTypeId, updateEventDto.EventTypeId ?? response.Model.EventTypeId)
+            .Update();
+        
+        var eventList = await _supabaseClient.From<Event>().Get();
+        return _mapper.Map<List<GetEventDto>>(eventList.Models);
+        
     }
 }
