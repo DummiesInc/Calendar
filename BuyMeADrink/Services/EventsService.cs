@@ -11,7 +11,7 @@ public interface IEventService
 {
     Task<List<GetEventDto>> GetEvents();
     Task<GetEventDto> GetEvent(int id);
-    Task<GetEventDto> AddEvent(AddEventDto addEventDto);
+    Task<List<GetEventDto>> AddEvent(AddEventDto addEventDto);
     Task DeleteEvent(int id);
 }
 
@@ -46,7 +46,7 @@ public class EventsService: IEventService
         return _mapper.Map<GetEventDto>(data);
     }
 
-    public async Task<GetEventDto> AddEvent(AddEventDto addEventDto)
+    public async Task<List<GetEventDto>> AddEvent(AddEventDto addEventDto)
     {
         
         var eventType = await _supabaseClient.From<EventType>().Where(x => x.Id == addEventDto.EventTypeId).Get();
@@ -72,7 +72,9 @@ public class EventsService: IEventService
             throw new InvalidOperationException("Something bad happened...your event was not added");
         }
 
-        return _mapper.Map<GetEventDto>(result.Model);
+        var response = await _supabaseClient.From<Event>().Get();
+        return _mapper.Map<List<GetEventDto>>(response.Models);
+        
     }
 
     public async Task DeleteEvent(int id)

@@ -34,7 +34,7 @@ public class EventsController: ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<GetEventDto>> AddEvent(AddEventDto addEventDto)
+    public async Task<ActionResult<List<GetEventDto>>> AddEvent(AddEventDto addEventDto)
     {
         var result = await _eventService.AddEvent(addEventDto);
         return Ok(result);
