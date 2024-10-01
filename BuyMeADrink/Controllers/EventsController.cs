@@ -1,5 +1,6 @@
 using BuyMeADrink.Dto.Add;
 using BuyMeADrink.Dto.Get;
+using BuyMeADrink.Dto.Request;
 using BuyMeADrink.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -46,6 +47,12 @@ public class EventsController: ControllerBase
         await _eventService.DeleteEvent(id);
         return Ok();
     }
-    
+
+    [HttpPatch("{id}")]
+    public async Task<ActionResult<List<GetEventDto>>> UpdateEvent(int id, UpdateEventDto updateEventDto)
+    {
+        var res = await _eventService.UpdateEvent(id, updateEventDto);
+        return Ok(res);
+    }
     // Still need a put and patch endpoint here
 }
